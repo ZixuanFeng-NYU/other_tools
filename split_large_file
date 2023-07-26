@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Define the input file name
+input_file="*.csv"
+
+
+# Copy the header to a separate file
+head -n 1 "$input_file" > header.csv
+
+# Remove the header from the original file
+tail -n +2 "$input_file" > data_without_header.csv
+#split data to sunfile with 100000 lines in each.
+split -d -a 2 -l 100000 data_without_header.csv subfile_
+
+# Iterate through each subfile, concatenate the header, and save as CSV
+for file in subfile_*
+do
+    cat header.csv "$file" > "${file}.csv"
+    rm "$file"  # Remove the subfile without the header
+
+done
+
+# Remove the temporary header file and data file
+rm header.csv data_without_header.csv
+
